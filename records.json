@@ -1,0 +1,6 @@
+{
+    "records": [
+        {"hostname": "pihole.tsphotoclicks.net", "new_ip": "192.168.2.4"},
+        {"hostname": "idrac1.tsphotoclicks.net", "new_ip": "192.168.10.5"}
+    ]
+}
