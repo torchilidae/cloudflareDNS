@@ -21,7 +21,6 @@ update_or_create_dns_records() {
     # If new_ips is an array, iterate through it
     if [ "$(jq 'type' <<< "$new_ips")" == "array" ]; then
         for new_ip in $(echo "$new_ips" | jq -r '.[]'); do
-            echo $new_ip
             # Create or update each IP address
             create_or_update_response=$(curl -s -X POST "${API_URL}/${hostname}" \
             -H "Authorization: Bearer ${CF_TOKEN}" \
@@ -58,6 +57,7 @@ if [ -f "$input_file" ]; then
     for row in $(echo "${data}" | jq -c '.records[]'); do
         hostname=$(echo "$row" | jq -r '.hostname')
         new_ips=$(echo "$row" | jq -r '.new_ips')
+        echo "Processing: hostname=${hostname}, new_ips=${new_ips}"
         update_or_create_dns_records "$hostname" "$new_ips"
     done
 else
