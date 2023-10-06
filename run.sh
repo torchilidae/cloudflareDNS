@@ -22,7 +22,7 @@ update_or_create_dns_records() {
     if [ "$(jq 'type' <<< "$new_ips")" == "array" ]; then
         for new_ip in $(echo "$new_ips" | jq -r '.[]'); do
             # Create or update each IP address
-            create_or_update_response=$(curl -s -X POST "${API_URL}/${hostname}" \
+            create_or_update_response=$(curl -s -X PUT "${API_URL}/${hostname}" \
             -H "Authorization: Bearer ${CF_TOKEN}" \
                 -H "Content-Type: application/json" \
                 --data "{\"type\":\"A\",\"name\":\"${hostname}\",\"content\":\"${new_ip}\"}")
@@ -35,7 +35,7 @@ update_or_create_dns_records() {
         done
     else
         # If new_ips is a single IP address, create or update it
-        create_or_update_response=$(curl -s -X POST "${API_URL}/${hostname}" \
+        create_or_update_response=$(curl -s -X PUT "${API_URL}/${hostname}" \
             -H "Authorization: Bearer ${CF_TOKEN}" \
             -H "Content-Type: application/json" \
             --data "{\"type\":\"A\",\"name\":\"${hostname}\",\"content\":\"${new_ips}\"}")
