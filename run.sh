@@ -46,7 +46,7 @@ update_or_create_dns_record() {
 }
 
 # Load data from JSON file
-input_file="input.json"
+input_file="records.json"
 if [ -f "$input_file" ]; then
     data=$(cat "$input_file")
 
