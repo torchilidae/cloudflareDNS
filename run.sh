@@ -57,7 +57,6 @@ if [ -f "$input_file" ]; then
     for row in $(echo "${data}" | jq -c '.records[]'); do
         hostname=$(echo "$row" | jq -r '.hostname')
         new_ips=$(echo "$row" | jq -r '.new_ips')
-        echo "Processing: hostname=${hostname}, new_ips=${new_ips}"
         update_or_create_dns_records "$hostname" "$new_ips"
     done
 else
