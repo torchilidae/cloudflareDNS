@@ -12,40 +12,31 @@ update_or_create_dns_records() {
     local hostname="$1"
     local new_ips="$2"
 
-    # Check if new_ips is null or empty
-    if [ -z "$new_ips" ]; then
-        echo "No new IPs specified for ${hostname}. Skipping..."
-        return
-    fi
+    # Find the DNS records by hostname
+    response=$(curl -s -X GET "${API_URL}?name=${hostname}&type=A" \
+        -H "Authorization: Bearer ${CF_TOKEN}")
 
-    # If new_ips is an array, iterate through it
-    if [ "$(jq 'type' <<< "$new_ips")" == "array" ]; then
-        for new_ip in $(echo "$new_ips" | jq -r '.[]'); do
-            # Create or update each IP address
-            create_or_update_response=$(curl -s -X PUT "${API_URL}/${hostname}" \
-            -H "Authorization: Bearer ${CF_TOKEN}" \
-                -H "Content-Type: application/json" \
-                --data "{\"type\":\"A\",\"name\":\"${hostname}\",\"content\":\"${new_ip}\"}")
+    record_ids=$(echo "$response" | jq -r '.result[].id')
 
-            if [ "$(echo "$create_or_update_response" | jq -r '.success')" == "true" ]; then
-                echo "Successfully created or updated ${hostname} with IP ${new_ip}"
-            else
-                echo "Failed to create or update ${hostname} with IP ${new_ip}: $(echo "$create_or_update_response" | jq -r '.errors[0].message')"
-            fi
-        done
-    else
-        # If new_ips is a single IP address, create or update it
-        create_or_update_response=$(curl -s -X PUT "${API_URL}/${hostname}" \
+    # Delete existing DNS records
+    for record_id in $record_ids; do
+        delete_response=$(curl -s -X DELETE "${API_URL}/${record_id}" \
+            -H "Authorization: Bearer ${CF_TOKEN}")
+    done
+
+    # Create new DNS records with the new IPs
+    for new_ip in ${new_ips[@]}; do
+        create_response=$(curl -s -X POST "${API_URL}" \
             -H "Authorization: Bearer ${CF_TOKEN}" \
             -H "Content-Type: application/json" \
-            --data "{\"type\":\"A\",\"name\":\"${hostname}\",\"content\":\"${new_ips}\"}")
+            --data "{\"type\":\"A\",\"name\":\"${hostname}\",\"content\":\"${new_ip}\"}")
 
-        if [ "$(echo "$create_or_update_response" | jq -r '.success')" == "true" ]; then
-            echo "Successfully created or updated ${hostname} with IP ${new_ips}"
+        if [ "$(echo "$create_response" | jq -r '.success')" == "true" ]; then
+            echo "Successfully created ${hostname} with IP ${new_ip}"
         else
-            echo "Failed to create or update ${hostname} with IP ${new_ips}: $(echo "$create_or_update_response" | jq -r '.errors[0].message')"
+            echo "Failed to create ${hostname} with IP ${new_ip}: $(echo "$create_response" | jq -r '.errors[0].message')"
         fi
-    fi
+    done
 }
 
 # Load data from JSON file
@@ -56,7 +47,7 @@ if [ -f "$input_file" ]; then
     # Iterate through records and update or create them
     for row in $(echo "${data}" | jq -c '.records[]'); do
         hostname=$(echo "$row" | jq -r '.hostname')
-        new_ips=$(echo "$row" | jq -r '.new_ips')
+        new_ips=$(echo "$row" | jq -r '.new_ips[]')
         update_or_create_dns_records "$hostname" "$new_ips"
     done
 else
