@@ -1,5 +1,6 @@
 {
     "records": [
+        {"hostname": "cloudvm.tsphotoclicks.net", "new_ips": ["129.146.138.85"]},
         {"hostname": "pfsense.tsphotoclicks.net", "new_ips": ["192.168.2.2"]},
         {"hostname": "pfsensebkp.tsphotoclicks.net", "new_ips": ["192.168.2.3"]},
         {"hostname": "pihole.tsphotoclicks.net", "new_ips": ["192.168.2.4"]},
