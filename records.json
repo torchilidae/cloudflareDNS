@@ -17,7 +17,7 @@
         {"hostname": "idrac2.tsphotoclicks.net", "new_ips": ["192.168.10.5"]},
         {"hostname": "idrac3.tsphotoclicks.net", "new_ips": ["192.168.10.6"]},
         {"hostname": "ds.tsphotoclicks.net", "new_ips": ["192.168.10.10"]},
-        {"hostname": "ansible.tsphotoclicks.net", "new_ips": ["192.168.10.12"]},
+        {"hostname": "ansible.tsphotoclicks.net", "new_ips": ["192.168.2.17"]},
         {"hostname": "docker.tsphotoclicks.net", "new_ips": ["192.168.2.13", "192.168.2.14", "192.168.2.15"]},
         {"hostname": "*.docker.tsphotoclicks.net", "new_ips": ["192.168.2.13", "192.168.2.14", "192.168.2.15"]}
     ]
